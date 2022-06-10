@@ -14,7 +14,7 @@
 ![img_2.png](doc/img/img_2.png)
 
 3、**ConfigController.parseImportDataV2() and ConfigController.parseImportData:**
-![img_2.png](img_2.png)
+![img_2.png](doc/img/aaaaa.png)
 
 
 ### 2、webhook插件 [github 项目链接](https://github.com/Florence-y/plugin/tree/master/webhook)
@@ -25,7 +25,7 @@
 。
 #### （2）具体代码
 #####  1.包架构
-![img.png](img.png)
+![img.png](doc/img/xxx.png)
 
 - constants: 常量与枚举类
 - model：与逻辑相关的一些pojo
@@ -231,13 +231,13 @@ public class WebHookPluginManager {
 ### 3、白名单插件[github 项目链接](https://github.com/Florence-y/plugin/tree/master/whitelist)
 #### （1）插件背景
 基于 [issue#4912](https://github.com/alibaba/nacos/issues/4912) 的需求讨论
-![img_1.png](img_1.png)
+![img_1.png](doc/img/axxxx.png)
 
 如上图issue讨论结果，因为在导入配置的时候，未对导入的配置文件格式进行校验，所以用户需要一个插件，这个插件有两个操作，首先是校验文件格式是否合法，第二个是
 doSomeThing,这里可以是用户的某些自定义行为。
 #### （2）具体代码
 ##### 1.包结构
-![img_4.png](img_4.png)
+![img_4.png](doc/img/img_4.png)
 - exception: 白名单校验异常
 - model：与逻辑相关的一些pojo
 - spi：用户可以自定义实现的spi接口
@@ -363,15 +363,15 @@ public class WhileListPluginServiceManager {
 ### 2、check插件 [github 项目链接](https://github.com/Florence-y/plugin/tree/master/check)
 #### （1）插件背景
 基于nacos [issue#8044](https://github.com/alibaba/nacos/issues/8044) 的描述
-![img_6.png](img_6.png)
+![img_6.png](doc/img/img_6.png)
 可以知道现在格式校验是有的，但是是在前端，所以当用户跳过前端，直接请求OpenApi的话，那么就会跳过格式校验，导致异常
 
 校验流程逻辑图如下
-![img_7.png](img_7.png)
+![img_7.png](doc/img/img_7.png)
 
 #### （2）具体代码
 #####  1.包架构
-![img_8.png](img_8.png)
+![img_8.png](doc/img/img_8.png)
 - exception: 白名单校验异常
 - model：与逻辑相关的一些pojo
 - spi：用户可以自定义实现的spi接口
