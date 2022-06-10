@@ -228,7 +228,7 @@ public class WebHookPluginManager {
 ```
 
 
-### 3、白名单插件
+### 3、白名单插件[github 项目链接](https://github.com/Florence-y/plugin/tree/master/whitelist)
 #### （1）插件背景
 基于 [issue#4912](https://github.com/alibaba/nacos/issues/4912) 的需求讨论
 ![img_1.png](img_1.png)
@@ -360,8 +360,134 @@ public class WhileListPluginServiceManager {
 }
 
 ```
+### 2、check插件 [github 项目链接](https://github.com/Florence-y/plugin/tree/master/check)
+#### （1）插件背景
+基于nacos [issue#8044](https://github.com/alibaba/nacos/issues/8044) 的描述
+![img_6.png](img_6.png)
+可以知道现在格式校验是有的，但是是在前端，所以当用户跳过前端，直接请求OpenApi的话，那么就会跳过格式校验，导致异常
 
+校验流程逻辑图如下
+![img_7.png](img_7.png)
 
+#### （2）具体代码
+#####  1.包架构
+![img_8.png](img_8.png)
+- exception: 白名单校验异常
+- model：与逻辑相关的一些pojo
+- spi：用户可以自定义实现的spi接口
+##### 2.主要逻辑代码
+```java
+// 1、FormatErrorException格式校验异常，dataId 用于用户排查追踪，message用于提示用户错在哪
+/**
+ * check format error
+ */
+public class FormatErrorException extends Exception {
+    /**
+     * config data id
+     */
+    String dataId;
+    /**
+     * feed back message
+     */
+    String message;
+}
+// 2、用于校验格式的上下文，主要包括content，content可以为Publish、Edit事件后的内容
+/**
+ * the context which we offer plugin developer
+ */
+public class CheckContext {
+    /**
+     * the config dataId
+     */
+    String dataId;
+    /**
+     * the content need to check
+     */
+    String content;
+
+    // more nacos properties
+}
+
+// 3、core spi 
+// CheckPluginService:主要的校验接口，check可以根据CheckContext的内容进行上下文校验，
+// 如果校验错误抛出FormatErrorException，isEnable作为后续扩展接口，用户可以关闭校验检查
+/**
+ * the CheckPluginService SPI
+ */
+public interface CheckPluginService {
+
+    /**
+     * the check
+     * @param context Context
+     * @return isSuccess
+     * @throws FormatErrorException if check fail will throw
+     */
+    boolean check(CheckContext context) throws FormatErrorException;
+
+    /**
+     * the check plugin is enable
+     * @return
+     */
+    boolean isEnable();
+}
+
+// 4、CheckPluginServiceManager: config controller 直接调用的Manager，
+// 主要负责SPI的注入，屏蔽细节，并且采用责任链模式，形成check调用链，可以有多个检验插件
+// 
+
+public class CheckPluginServiceManager {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(CheckPluginServiceManager.class);
+    /**
+     * all the check plugin
+     */
+    private final List<CheckPluginService> checkPluginServices = new ArrayList<>();
+
+    private static final CheckPluginServiceManager INSTANCE = new CheckPluginServiceManager();
+
+    public CheckPluginServiceManager() {
+        initCheckPluginServices();
+    }
+
+    /**
+     * init: load the plugin into checkPluginServicesList
+     */
+    private void initCheckPluginServices() {
+        // load CheckPluginService spi
+    }
+
+    /**
+     * multiply check plugin execute
+     * @param context check context
+     * @return process is success`
+     */
+    public boolean processCheck(CheckContext context) {
+        // multiply check plugin once one check fail return false
+        for (CheckPluginService checkPluginService : checkPluginServices) {
+            // isEnable
+            if (checkPluginService.isEnable()){
+                // do check
+                try {
+                    boolean isLegal = checkPluginService.check(context);
+                    if (!isLegal) {
+                        return false;
+                    }
+                } catch (FormatErrorException e) {
+                    LOGGER.warn("CheckPlugin:check fail,data id:{},content:{}",context.getDataId(),context.getContent());
+                    return false;
+                }
+            }
+        }
+        // check success
+        return true;
+    }
+
+    public static CheckPluginServiceManager getINSTANCE() {
+        return INSTANCE;
+    }
+}
+
+```
 
 
 
