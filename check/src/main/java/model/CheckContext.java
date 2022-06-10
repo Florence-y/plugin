@@ -1,7 +1,17 @@
 package model;
 
+
+/**
+ * the context which we offer plugin developer
+ */
 public class CheckContext {
+    /**
+     * the config dataId
+     */
     String dataId;
+    /**
+     * the content need to check
+     */
     String content;
 
     public String getDataId() {

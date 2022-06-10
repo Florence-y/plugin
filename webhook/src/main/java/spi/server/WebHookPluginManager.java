@@ -22,9 +22,10 @@ public class WebHookPluginManager {
     }
 
     private void initWebHookPlugins() {
-        // spi load the WebHookPlugin
+        // spi load the WebHookPlugins
     }
 
+    // singleton
     public WebHookPluginManager getInstance() {
         return INSTANCE;
     }
@@ -35,6 +36,7 @@ public class WebHookPluginManager {
      */
     public void processWebHooks(WebHookContext webHookContext){
         for (WebHookPluginService service : map.values()) {
+            // check enable and match
             if (service.isEnable(webHookContext)&&service.isMatch(webHookContext)){
                 service.send(webHookContext);
             }

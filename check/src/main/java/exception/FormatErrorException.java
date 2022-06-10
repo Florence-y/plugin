@@ -1,10 +1,17 @@
 package exception;
 
+/**
+ * check format error
+ */
 public class FormatErrorException extends Exception {
+    /**
+     * config data id
+     */
     String dataId;
+    /**
+     * feed back message
+     */
     String message;
-
-
 
     public FormatErrorException() {
     }
