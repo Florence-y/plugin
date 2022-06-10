@@ -11,8 +11,25 @@ public class WhileListPluginServiceContext {
      * triggerTime
      */
     LocalDateTime time;
+    /**
+     * fileType
+     */
+    FileType fileType;
+
 
     // more nacos properties
+
+
+
+
+
+    public FileType getFileType() {
+        return fileType;
+    }
+
+    public void setFileType(FileType fileType) {
+        this.fileType = fileType;
+    }
 
     public String getTrigger() {
         return trigger;
