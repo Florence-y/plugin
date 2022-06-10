@@ -120,9 +120,6 @@ public interface ClientWebHookService {
 }
 // 4、core spi 代码 server端,
 // WebHookContext:执行
-// WebHookPluginService：这里主要包括webHook的具体逻辑，比如webHook要发送给谁、
-// isEnable是否启动、isMatch触发webHook的条件，可以根据WebHookContext来做逻辑判断
-// 比如是Pub
 /**
  * the context which we offer plugin developer
  */
@@ -142,6 +139,11 @@ public class WebHookContext {
     
     // more nacos properties
 }
+// WebHookPluginService：这里主要包括webHook的具体逻辑。
+// send方法决定webHook要发送给谁、如何发送、
+// isEnable是否启动、isMatch触发webHook的条件
+// 可以根据WebHookContext来做逻辑判断，比如是Event is PublishEvent
+// 
 /**
  * the WebHookPluginService spi
  */
@@ -175,6 +177,62 @@ public interface WebHookPluginService {
      */
     boolean getName();
 }
+```
+```java
+// 5、CheckPluginServiceManager：这里是管理CheckPluginService的地方，config直接调用的地方
+// 隐藏 spi细节
+public class CheckPluginServiceManager {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(CheckPluginServiceManager.class);
+    /**
+     * all the check plugin
+     */
+    private final List<CheckPluginService> checkPluginServices = new ArrayList<>();
+
+    private static final CheckPluginServiceManager INSTANCE = new CheckPluginServiceManager();
+
+    public CheckPluginServiceManager() {
+        initCheckPluginServices();
+    }
+
+    /**
+     * init: load the plugin into checkPluginServicesList
+     */
+    private void initCheckPluginServices() {
+        // load CheckPluginService spi
+    }
+
+    /**
+     * multiply check plugin execute
+     * @param context check context
+     * @return process is success`
+     */
+    public boolean processCheck(CheckContext context) {
+        // multiply check plugin once one check fail return false
+        for (CheckPluginService checkPluginService : checkPluginServices) {
+            // isEnable
+            if (checkPluginService.isEnable()){
+                // do check
+                try {
+                    boolean isLegal = checkPluginService.check(context);
+                    if (!isLegal) {
+                        return false;
+                    }
+                } catch (FormatErrorException e) {
+                    LOGGER.warn("CheckPlugin:check fail,data id:{},content:{}",context.getDataId(),context.getContent());
+                    return false;
+                }
+            }
+        }
+        // check success
+        return true;
+    }
+
+    public static CheckPluginServiceManager getINSTANCE() {
+        return INSTANCE;
+    }
+}
+
 ```
 
 
