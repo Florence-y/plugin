@@ -2,15 +2,20 @@ package spi;
 
 import exception.FormatErrorException;
 import model.CheckContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-
 public class CheckPluginServiceManager {
     /**
      * all the check plugin
      */
+    private static final Logger LOGGER = LoggerFactory.getLogger(CheckPluginServiceManager.class);
+
     private final List<CheckPluginService> checkPluginServices = new ArrayList<>();
+
+    private static final CheckPluginServiceManager INSTANCE = new CheckPluginServiceManager();
 
     public CheckPluginServiceManager() {
         initCheckPluginServices();
@@ -37,12 +42,16 @@ public class CheckPluginServiceManager {
                         return false;
                     }
                 } catch (FormatErrorException e) {
-                    // log data id and content to trace
+                    LOGGER.warn("CheckPlugin:check fail,data id:{},content:{}",context.getDataId(),context.getContent());
                     return false;
                 }
             }
         }
         // check success
         return true;
+    }
+
+    public static CheckPluginServiceManager getINSTANCE() {
+        return INSTANCE;
     }
 }
