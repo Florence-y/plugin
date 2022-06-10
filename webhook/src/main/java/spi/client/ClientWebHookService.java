@@ -12,12 +12,13 @@ public interface ClientWebHookService {
     /**
      * client add WebHooks
      *
+     * @param name       the webHooks name
      * @param url        the server url that you want to send event,this the unique key
      * @param eventTypes the event your server received edit、publish、delete
      * @return
      */
 
-    Integer addWebHooks(String url, List<EventType> eventTypes);
+    Integer addWebHooks(String name, String url, List<EventType> eventTypes);
 
     /**
      * @param url the webhook unique key
