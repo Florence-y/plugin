@@ -2,7 +2,7 @@ package model;
 
 import java.time.LocalDateTime;
 
-public class WhileListPluginServiceContext {
+public class WhiteListPluginServiceContext {
     /**
      * trigger
      */

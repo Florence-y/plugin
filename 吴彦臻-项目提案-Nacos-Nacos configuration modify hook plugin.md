@@ -242,7 +242,124 @@ doSomeThing,这里可以是用户的某些自定义行为。
 - model：与逻辑相关的一些pojo
 - spi：用户可以自定义实现的spi接口
 ##### 2.主要逻辑代码
+```java
+// 1、业务异常，主要用来校验文件类型不符合预期异常
+/**
+ * check format error
+ */
+public class FileTypeUnExpectException extends Exception {
+    /**
+     * config data id
+     */
+    String dataId;
+    /**
+     * feed back message
+     */
+    String message;
+}
+// 2、用于枚举服务器允许导入的文件类型
+/**
+ * all fileType allow
+ */
+public enum FileType {
 
+    ZIP(".zip"),
+    TXT(".txt"),
+    MD(".md");
+    /**
+     * the file suffix 
+     */
+    private String suffix;
+
+    FileType(String suffix) {
+        this.suffix = suffix;
+    }
+
+    public String getSuffix() {
+        return suffix;
+    }
+}
+// 3、每次导入数据的插件上下文，用户可以根据文件类型是否符合规范，以及后缀是否预期内
+// 去做相应的判断与校验
+public class WhileListPluginServiceContext {
+    /**
+     * trigger
+     */
+    String trigger;
+    /**
+     * triggerTime
+     */
+    LocalDateTime time;
+    /**
+     * fileType
+     */
+    FileType fileType;
+
+
+    // more nacos properties
+}
+
+// 4、core spi 
+// 白名单spi接口，这里主要将白名单抽象成两个动作，一是根据WhileListPluginServiceContext的信息去判断是否可以继续执行，
+// 二是process接口可以实现，如果可以继续执行，用户可以执行对应的操作
+public interface WhileListPluginService {
+
+    /**
+     * check is you can do someThing  such as
+     * @param context the context offer developer to do some check
+     * @return
+     */
+    boolean isCanDo(WhileListPluginServiceContext context) throws FileTypeUnExpectException;
+
+    /**
+     * execute the exact task
+     * @return isSuccess
+     */
+    boolean process();
+}
+
+// 5、WhiteListPluginServiceManager：用于config import时直接调用，
+// initWhiteListPluginService载入相应的spi实现
+// processWhileListDo，根据插件是否canDo,执行相应的process逻辑
+public class WhileListPluginServiceManager {
+    /**
+     * all the whitelist plugin
+     */
+    private final List<WhileListPluginService> checkPluginServices = new ArrayList<>();
+
+
+    private static final WhileListPluginServiceManager INSTANCE = new WhileListPluginServiceManager();
+
+    public WhileListPluginServiceManager() {
+        initWhileListPluginService();
+    }
+
+    /**
+     * init: load the plugin into webHookPluginServiceMap
+     */
+
+    private void initWhileListPluginService() {
+        // load spi checkPluginServiceImpl into checkPluginServiceList
+    }
+
+    /**
+     * process whileList
+     * @param context
+     */
+    public void processWhileListDo(WhileListPluginServiceContext context) throws FileTypeUnExpectException {
+        for (WhileListPluginService checkPluginService : checkPluginServices) {
+            if (checkPluginService.isCanDo(context)){
+                checkPluginService.process();
+            }
+        }
+    }
+
+    public static WhileListPluginServiceManager getINSTANCE() {
+        return INSTANCE;
+    }
+}
+
+```
 
 
 
