@@ -2,6 +2,9 @@ package spi.server;
 
 import model.WebHookContext;
 
+/**
+ * the WebHookPluginService spi
+ */
 public interface WebHookPluginService {
 
 

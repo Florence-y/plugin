@@ -3,11 +3,20 @@ package model;
 import model.event.Event;
 
 /**
- *  the context which we offer plugin developer
+ * the context which we offer plugin developer
  */
 public class WebHookContext {
     private Event event;
     private String trigger;
+    private String dataId;
+
+    public String getDataId() {
+        return dataId;
+    }
+
+    public void setDataId(String dataId) {
+        this.dataId = dataId;
+    }
 
     public Event getEvent() {
         return event;

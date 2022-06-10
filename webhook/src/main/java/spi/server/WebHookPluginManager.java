@@ -5,6 +5,9 @@ import model.WebHookContext;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * the WebHookPluginService manager
+ */
 public class WebHookPluginManager {
 
     /**
