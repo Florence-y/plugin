@@ -12,6 +12,8 @@ public class WhileListPluginServiceContext {
      */
     LocalDateTime time;
 
+    // more nacos properties
+
     public String getTrigger() {
         return trigger;
     }

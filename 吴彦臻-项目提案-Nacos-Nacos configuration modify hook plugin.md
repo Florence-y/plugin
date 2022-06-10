@@ -78,7 +78,103 @@ public class PublishEvent extends Event{
         return EventType.PUBLISH;
     }
 }
-// 3、
+```
+
+```java
+// 3、core spi 代码，client端
+// ClientWebHookService:client端可以对服务端对操作，比如添加一个webhook，启用webhook......
+/**
+ *  client to operate the WebHooks
+ */
+public interface ClientWebHookService {
+
+    /**
+     * client add WebHooks
+     *
+     * @param name       the webHooks name
+     * @param url        the server url that you want to send event,this the unique key
+     * @param eventTypes the event your server received edit、publish、delete
+     * @return
+     */
+
+    Integer addWebHooks(String name, String url, List<EventType> eventTypes);
+
+    /**
+     * @param url the webhook unique key
+     * @return isSuccess
+     */
+    boolean enableWebHooks(String url);
+
+    /**
+     * @param url the webhook unique key
+     * @return isSuccess
+     */
+    boolean unableWebHooks(String url);
+
+    /**
+     *
+     * @param url the webhook unique key
+     * @return isSuccess
+     */
+    boolean removeWebHooks(String url);
+}
+// 4、core spi 代码 server端,
+// WebHookContext:执行
+// WebHookPluginService：这里主要包括webHook的具体逻辑，比如webHook要发送给谁、
+// isEnable是否启动、isMatch触发webHook的条件，可以根据WebHookContext来做逻辑判断
+// 比如是Pub
+/**
+ * the context which we offer plugin developer
+ */
+public class WebHookContext {
+    /**
+     * the webHook event
+     */
+    private Event event;
+    /**
+     * the config change user
+     */
+    private String trigger;
+    /**
+     * the config data id
+     */
+    private String dataId;
+    
+    // more nacos properties
+}
+/**
+ * the WebHookPluginService spi
+ */
+public interface WebHookPluginService {
+
+
+    /**
+     * webhook send message to server
+     *
+     * @return
+     */
+    boolean send(WebHookContext webHookContext);
+
+    /**
+     * the webHook is enable
+     *
+     * @return
+     */
+    boolean isEnable(WebHookContext webHookContext);
+
+    /**
+     * @param webHookContext the context which we offer plugin developer
+     *
+     * @return
+     */
+    boolean isMatch(WebHookContext webHookContext);
+
+    /**
+     * webhook name(unique key)
+     * @return
+     */
+    boolean getName();
+}
 ```
 
 

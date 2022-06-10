@@ -14,6 +14,8 @@ public class CheckContext {
      */
     String content;
 
+    // more nacos properties
+
     public String getDataId() {
         return dataId;
     }

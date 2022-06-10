@@ -19,6 +19,8 @@ public class WebHookContext {
      */
     private String dataId;
 
+    // more nacos properties
+
     public String getDataId() {
         return dataId;
     }
