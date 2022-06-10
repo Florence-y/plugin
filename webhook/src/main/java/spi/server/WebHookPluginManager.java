@@ -13,14 +13,16 @@ public class WebHookPluginManager {
     /**
      * the Name to Exact WebHookService
      */
-    private final Map<String, WebHookPluginService> map = new HashMap<>();
+    private final Map<String, WebHookPluginService> webHookPluginServiceMap = new HashMap<>();
 
     private static final WebHookPluginManager INSTANCE = new WebHookPluginManager();
 
     public WebHookPluginManager() {
         initWebHookPlugins();
     }
-
+    /**
+     * init: load the plugin into webHookPluginServiceMap
+     */
     private void initWebHookPlugins() {
         // spi load the WebHookPlugins
     }
@@ -35,9 +37,10 @@ public class WebHookPluginManager {
      * @param webHookContext
      */
     public void processWebHooks(WebHookContext webHookContext){
-        for (WebHookPluginService service : map.values()) {
+        for (WebHookPluginService service : webHookPluginServiceMap.values()) {
             // check enable and match
             if (service.isEnable(webHookContext)&&service.isMatch(webHookContext)){
+                // send the webhook to server
                 service.send(webHookContext);
             }
         }

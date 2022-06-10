@@ -6,8 +6,17 @@ import model.event.Event;
  * the context which we offer plugin developer
  */
 public class WebHookContext {
+    /**
+     * the webHook event
+     */
     private Event event;
+    /**
+     * the config change user
+     */
     private String trigger;
+    /**
+     * the config data id
+     */
     private String dataId;
 
     public String getDataId() {

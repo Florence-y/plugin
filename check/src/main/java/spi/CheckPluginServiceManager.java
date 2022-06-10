@@ -8,11 +8,11 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 public class CheckPluginServiceManager {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(CheckPluginServiceManager.class);
     /**
      * all the check plugin
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(CheckPluginServiceManager.class);
-
     private final List<CheckPluginService> checkPluginServices = new ArrayList<>();
 
     private static final CheckPluginServiceManager INSTANCE = new CheckPluginServiceManager();
@@ -21,6 +21,9 @@ public class CheckPluginServiceManager {
         initCheckPluginServices();
     }
 
+    /**
+     * init: load the plugin into checkPluginServicesList
+     */
     private void initCheckPluginServices() {
         // load CheckPluginService spi
     }

@@ -1,17 +1,30 @@
 package constants;
 
+/**
+ * all event type
+ */
 public enum EventType {
 
     /**
      * publish config
      */
-    PUBLISH,
+    PUBLISH("publish"),
     /**
      * edit config
      */
-    EDIT,
+    EDIT("edit"),
     /**
      * delete config
      */
-    DELETE,
+    DELETE("delete");
+
+    private String name;
+
+    EventType(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
 }
