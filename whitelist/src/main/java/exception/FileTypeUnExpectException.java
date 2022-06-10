@@ -3,7 +3,7 @@ package exception;
 /**
  * check format error
  */
-public class FormatErrorException extends Exception {
+public class FileTypeUnExpectException extends Exception {
     /**
      * config data id
      */
@@ -13,33 +13,33 @@ public class FormatErrorException extends Exception {
      */
     String message;
 
-    public FormatErrorException() {
+    public FileTypeUnExpectException() {
     }
 
-    public FormatErrorException(String dataId, String message) {
+    public FileTypeUnExpectException(String dataId, String message) {
         this.dataId = dataId;
         this.message = message;
     }
 
-    public FormatErrorException(String message, String dataId, String message1) {
+    public FileTypeUnExpectException(String message, String dataId, String message1) {
         super(message);
         this.dataId = dataId;
         this.message = message1;
     }
 
-    public FormatErrorException(String message, Throwable cause, String dataId, String message1) {
+    public FileTypeUnExpectException(String message, Throwable cause, String dataId, String message1) {
         super(message, cause);
         this.dataId = dataId;
         this.message = message1;
     }
 
-    public FormatErrorException(Throwable cause, String dataId, String message) {
+    public FileTypeUnExpectException(Throwable cause, String dataId, String message) {
         super(cause);
         this.dataId = dataId;
         this.message = message;
     }
 
-    public FormatErrorException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace, String dataId, String message1) {
+    public FileTypeUnExpectException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace, String dataId, String message1) {
         super(message, cause, enableSuppression, writableStackTrace);
         this.dataId = dataId;
         this.message = message1;

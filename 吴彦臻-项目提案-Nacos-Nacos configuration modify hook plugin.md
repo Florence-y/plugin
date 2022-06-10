@@ -1,10 +1,10 @@
-### 一、项目名称
+## 一、项目名称
 - Nacos - Nacos configuration modify hook plugin copy
-### 二、项目详细方案
+## 二、项目详细方案
 
-#### 1、插件切入点接口（插件在哪里执行）
+### 1、插件切入点接口（插件在哪里执行）
 
-- 因为此次插件是针对发布，修改，删除应用配置，在阅读了代码后，选用了以下两个插入点
+- 因为此次插件是针对**发布，修改，删除**应用配置，另外白名单的切入点还有在**导入配置**里需要，在阅读了代码后，选用了以下插件切入点，
 
 1、**ConfigController.publishConfig():** 在这里我们是所有config publish、edit事件的入口
 
@@ -13,22 +13,25 @@
 2、**ConfigController.deleteConfig():** 在这里我们是所有config delete的事件的入口
 ![img_2.png](doc/img/img_2.png)
 
+3、**ConfigController.parseImportDataV2() and ConfigController.parseImportData:**
+![img_2.png](img_2.png)
 
-#### 2、webhook插件 [github 项目链接](https://github.com/Florence-y/plugin/tree/master/webhook)
-##### （1）插件背景
+
+### 2、webhook插件 [github 项目链接](https://github.com/Florence-y/plugin/tree/master/webhook)
+#### （1）插件背景
 基于nacos [issue#8338](https://github.com/alibaba/nacos/issues/8338) 的描述
 ![img.png](doc/img/img.png)
 可以知道用户是想在自己的服务上暴露一个接受请求的接口，只要config 模块发生 publish、edit、delete事件，用户想感知并做一些特殊操作
 。
-##### （2）具体代码
-###### 1、包架构
+#### （2）具体代码
+#####  1.包架构
 ![img.png](img.png)
 
 - constants: 常量与枚举类
 - model：与逻辑相关的一些pojo
 - spi：用户可以自定义实现的spi接口
 
-##### 2、主要逻辑代码
+##### 2.主要逻辑代码
 
 ```java
 // 1、the base event:这个是所有事项基本抽象类，
@@ -179,71 +182,76 @@ public interface WebHookPluginService {
 }
 ```
 ```java
-// 5、CheckPluginServiceManager：这里是管理CheckPluginService的地方，config直接调用的地方
-// 隐藏 spi细节
-public class CheckPluginServiceManager {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(CheckPluginServiceManager.class);
-    /**
-     * all the check plugin
-     */
-    private final List<CheckPluginService> checkPluginServices = new ArrayList<>();
-
-    private static final CheckPluginServiceManager INSTANCE = new CheckPluginServiceManager();
-
-    public CheckPluginServiceManager() {
-        initCheckPluginServices();
-    }
+// 5、CheckPluginServiceManager：这里是管理CheckPluginService的地方，
+// config直接调用的地方,隐藏 spi加载细节
+/**
+ * the WebHookPluginService manager
+ */
+public class WebHookPluginManager {
 
     /**
-     * init: load the plugin into checkPluginServicesList
+     * the Name to Exact WebHookService
      */
-    private void initCheckPluginServices() {
-        // load CheckPluginService spi
-    }
+    private final Map<String, WebHookPluginService> webHookPluginServiceMap = new HashMap<>();
 
+    private static final WebHookPluginManager INSTANCE = new WebHookPluginManager();
+
+    public WebHookPluginManager() {
+        initWebHookPlugins();
+    }
     /**
-     * multiply check plugin execute
-     * @param context check context
-     * @return process is success`
+     * init: load the plugin into webHookPluginServiceMap
      */
-    public boolean processCheck(CheckContext context) {
-        // multiply check plugin once one check fail return false
-        for (CheckPluginService checkPluginService : checkPluginServices) {
-            // isEnable
-            if (checkPluginService.isEnable()){
-                // do check
-                try {
-                    boolean isLegal = checkPluginService.check(context);
-                    if (!isLegal) {
-                        return false;
-                    }
-                } catch (FormatErrorException e) {
-                    LOGGER.warn("CheckPlugin:check fail,data id:{},content:{}",context.getDataId(),context.getContent());
-                    return false;
-                }
-            }
-        }
-        // check success
-        return true;
+    private void initWebHookPlugins() {
+        // spi load the WebHookPlugins
     }
 
-    public static CheckPluginServiceManager getINSTANCE() {
+    // singleton
+    public WebHookPluginManager getInstance() {
         return INSTANCE;
     }
-}
 
+    /**
+     * send the webHook to those enable and match Service
+     * @param webHookContext
+     */
+    public void processWebHooks(WebHookContext webHookContext){
+        for (WebHookPluginService service : webHookPluginServiceMap.values()) {
+            // check enable and match
+            if (service.isEnable(webHookContext)&&service.isMatch(webHookContext)){
+                // send the webhook to server
+                service.send(webHookContext);
+            }
+        }
+    }
+}
 ```
 
 
+### 3、白名单插件
+#### （1）插件背景
+基于 [issue#4912](https://github.com/alibaba/nacos/issues/4912) 的需求讨论
+![img_1.png](img_1.png)
+
+如上图issue讨论结果，因为在导入配置的时候，未对导入的配置文件格式进行校验，所以用户需要一个插件，这个插件有两个操作，首先是校验文件格式是否合法，第二个是
+doSomeThing,这里可以是用户的某些自定义行为。
+#### （2）具体代码
+##### 1.包结构
+![img_4.png](img_4.png)
+- exception: 白名单校验异常
+- model：与逻辑相关的一些pojo
+- spi：用户可以自定义实现的spi接口
+##### 
 
 
 
-### 三、项目开发时间计划
 
-1、2022 年 7 月 4 日 - 2022 年 7 月 24 号 ：设计配置变更的Hook插件接口，实现相关的插件demo，能够在项目上运行。
-2、2022 7 月 25 号 - 2022 年 8 月 15 号 ：编写相应的单元测试，模拟各种可能出现的情况
-3、2022年 8 月 16 号 - 2022 年 8 月 27 号 ：提供完善的插件开发文档，包括插件开发，常见场景sample，常见问题等。
-### 四、其他你想和导师沟通的点
+
+## 三、项目开发时间计划
+
+- 1、2022 年 7 月 4 日 - 2022 年 7 月 24 号 ：设计配置变更的Hook插件接口，实现相关的插件demo，能够在项目上运行。
+- 2、2022 7 月 25 号 - 2022 年 8 月 15 号 ：编写相应的单元测试，模拟各种可能出现的情况
+- 3、2022年 8 月 16 号 - 2022 年 8 月 27 号 ：提供完善的插件开发文档，包括插件开发，常见场景sample，常见问题等。
+## 四、其他你想和导师沟通的点
 1、希望更进一步的了解到开源开发的流程，比如规范的开发流程，dev环境测试、灰度测试等
 2、在开源的线上环境下，如果克服无法线下沟通交流的困难
