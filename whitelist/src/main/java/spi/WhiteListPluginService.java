@@ -3,6 +3,9 @@ package spi;
 import exception.FileTypeUnExpectException;
 import model.WhiteListPluginServiceContext;
 
+import java.util.Arrays;
+import java.util.Scanner;
+
 public interface WhiteListPluginService {
 
     /**
@@ -10,6 +13,7 @@ public interface WhiteListPluginService {
      * @param context the context offer developer to do some check
      * @return
      */
+    Scanner
     boolean isCanDo(WhiteListPluginServiceContext context) throws FileTypeUnExpectException;
 
     /**
