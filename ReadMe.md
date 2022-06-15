@@ -17,6 +17,8 @@
 ![img_2.png](doc/img/aaaaa.png)
 
 
+> 注意点：1、因为插件是相当于 on the fly 一样的功能，所以如果非校验性制的插件，也就是不涉及流程的插件，必须通过消息队列异步化，防止插件异常导致主流程终端
+
 ### 2、webhook插件 [github 项目链接](https://github.com/Florence-y/plugin/tree/master/webhook)
 #### （1）插件背景
 基于nacos [issue#8338](https://github.com/alibaba/nacos/issues/8338) 的描述

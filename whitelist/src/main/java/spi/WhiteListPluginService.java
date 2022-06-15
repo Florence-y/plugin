@@ -13,7 +13,6 @@ public interface WhiteListPluginService {
      * @param context the context offer developer to do some check
      * @return
      */
-    Scanner
     boolean isCanDo(WhiteListPluginServiceContext context) throws FileTypeUnExpectException;
 
     /**
